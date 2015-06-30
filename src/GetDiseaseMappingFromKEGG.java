@@ -35,6 +35,8 @@ public class GetDiseaseMappingFromKEGG {
 		try {
 			doc = Jsoup.connect(url).timeout(10000).get();
 			Elements tbodys = doc.getElementsByTag("tbody");
+			if (tbodys.size() <= 2)
+				return "";
 			Element tbody = tbodys.get(2);
 			Elements nobrs = tbody.getElementsByTag("nobr");
 			for (Element nobr : nobrs) {
@@ -55,15 +57,17 @@ public class GetDiseaseMappingFromKEGG {
 				// Other DBs
 				if (nobr_str.equals("Other DBs")) {
 					result += "\t";
-
 					Element other_tr = nobr.parent().parent();
 					Elements div_tags = other_tr.getElementsByTag("div");
 					for (Element div : div_tags) {
-						if ("OMIM: ".equals(div.ownText().trim())) {
+						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
+						if (div.ownText().trim().contains(":")) {
+							result += div.ownText().trim();
 							for (Element a : div.nextElementSibling()
 									.getElementsByTag("a")) {
 								result += (a.ownText() + ",");
 							}
+							result += ";";
 						}
 					}
 				}
