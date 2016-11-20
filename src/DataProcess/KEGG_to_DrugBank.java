@@ -1,3 +1,4 @@
+package DataProcess;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,9 +14,9 @@ import org.jsoup.select.Elements;
 /**
  * Drug Mapping( KEGG to DrugBank)
  */
-public class D_to_DB_KEGG {
+public class KEGG_to_DrugBank {
 	public static void main(String[] args) {
-		D_to_DB_KEGG kegg = new D_to_DB_KEGG();
+		KEGG_to_DrugBank kegg = new KEGG_to_DrugBank();
 		try {
 			kegg.readIDs("KEGG_Drug.txt", "DrugBank_Drug.txt");
 		} catch (Exception e) {

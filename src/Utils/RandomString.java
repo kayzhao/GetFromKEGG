@@ -1,3 +1,4 @@
+package Utils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,7 +12,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Random;
 
-public class Professor {
+public class RandomString {
 	public static void main(String[] args) {
 		try {
 			generateTable();
@@ -43,7 +44,7 @@ public class Professor {
 	private static void generateTable() throws FileNotFoundException,
 			IOException {
 		InputStream dbk_in = new FileInputStream(new File("pr.txt"));
-		OutputStream ou = new FileOutputStream(new File("Professor.txt"));
+		OutputStream ou = new FileOutputStream(new File("RandomString.txt"));
 
 		// br , bw
 		BufferedReader br = new BufferedReader(new InputStreamReader(dbk_in));
