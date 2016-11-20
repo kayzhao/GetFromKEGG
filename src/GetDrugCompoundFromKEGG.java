@@ -160,7 +160,6 @@ public class GetDrugCompoundFromKEGG {
 						}
 					}
 				}
-
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -183,6 +182,7 @@ public class GetDrugCompoundFromKEGG {
 					.write(("C" + df.format(id) + "\t" + getContentPr(url) + "\n")
 							.getBytes());
 			id++;
+			outputStream.flush();
 		}
 		outputStream.flush();
 		outputStream.close();

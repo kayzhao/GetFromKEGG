@@ -12,11 +12,26 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * 从KEGG抓取Drug数据：<br>
+ * ID<br>
+ * Other DBs<br>
+ */
 public class GetDrugsMappingFromKEGG {
 	public static void main(String[] args) {
 		GetDrugsMappingFromKEGG kegg = new GetDrugsMappingFromKEGG();
 		try {
-			kegg.getDrugs("Kegg_Drugs_Mapping.txt");
+
+			/**
+			 * 测试一条数据
+			 */
+			String url = "http://www.kegg.jp/dbget-bin/www_bget?dr:D00001";
+			System.out.println(kegg.getContentPr(url));
+
+			/**
+			 * 所有数据
+			 */
+			// kegg.getDrugs("Kegg_Drugs_Mapping.txt");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -32,9 +47,28 @@ public class GetDrugsMappingFromKEGG {
 		Document doc;
 		String result = "";
 		try {
-			doc = Jsoup.connect(url).timeout(10000).get();
+			doc = Jsoup.connect(url).timeout(100000).get();
+
+			// doc is null
+			if (doc == null) {
+				return null;
+			}
+
+			// No such data.
+			Elements strongElements = doc.getElementsByTag("strong");
+			for (Element strong : strongElements) {
+				if (strong.ownText().contains("No such data."))
+					return null;
+			}
+
 			Elements tbodys = doc.getElementsByTag("tbody");
-			Element tbody = tbodys.get(2);
+			Element tbody = null;
+			if (tbodys.size() > 2) {
+				tbody = tbodys.get(2);
+			} else {
+				return result;
+			}
+
 			Elements nobrs = tbody.getElementsByTag("nobr");
 			for (Element nobr : nobrs) {
 				String nobr_str = nobr.ownText();
@@ -47,11 +81,13 @@ public class GetDrugsMappingFromKEGG {
 						result += (div_tags.get(i).ownText());
 						if (i > 0
 								&& div_tags.get(i).getElementsByTag("a") != null) {
-						//	result += ",";// 与前面的串分隔开，Cas number不含a标签
+							// result += ",";// 与前面的串分隔开，Cas number不含a标签
 							for (Element a : div_tags.get(i).getElementsByTag(
 									"a")) {
 								result += (a.ownText() + ",");
 							}
+							// cas number强行分割开
+							result += ",";
 						}
 					}
 				}
@@ -65,7 +101,8 @@ public class GetDrugsMappingFromKEGG {
 	public void getDrugs(String writepath) throws IOException {
 		FileOutputStream outputStream = new FileOutputStream(
 				new File(writepath));
-		int id = 1, max = 10601;
+		// int id = 1, max = 10601;
+		int id = 1, max = 10808;
 
 		DecimalFormat df = new DecimalFormat("00000");
 		String url = "";

@@ -1,17 +1,18 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DecimalFormat;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * Drug Mapping( KEGG to DrugBank)
+ */
 public class D_to_DB_KEGG {
 	public static void main(String[] args) {
 		D_to_DB_KEGG kegg = new D_to_DB_KEGG();

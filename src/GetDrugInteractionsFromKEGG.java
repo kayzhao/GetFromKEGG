@@ -8,6 +8,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * 从KEGG抓取Drug Interactions数据：<br>
+ * ID<br>
+ * IDs<br>
+ */
 public class GetDrugInteractionsFromKEGG {
 	public static void main(String[] args) {
 		GetDrugInteractionsFromKEGG kegg = new GetDrugInteractionsFromKEGG();

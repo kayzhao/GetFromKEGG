@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,6 +11,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+/**
+ * MESH to OMIM By KEGG Mapping
+ */
 public class GetFromKEGG {
 	public static void main(String[] args) {
 		GetFromKEGG kegg = new GetFromKEGG();
@@ -153,6 +155,7 @@ public class GetFromKEGG {
 			outputStream
 					.write(("H" + df.format(id) + "\t" + getContentPr(url) + "\n")
 							.getBytes());
+			outputStream.flush();
 			id++;
 		}
 		// url = "http://www.kegg.jp/dbget-bin/www_bget?ds:H" + df.format(202);

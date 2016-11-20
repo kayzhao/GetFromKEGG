@@ -9,25 +9,28 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * 从KEGG抓取Drug数据：<br>
+ * 从KEGG抓取疾病数据：<br>
  * ID<br>
  * Name<br>
- * Formula<br>
- * Exact mass<br>
- * Mol weight<br>
+ * Description<br>
+ * Category<br>
+ * Drug<br>
+ * Other DBs
  */
-public class GetDrugsFromKEGG {
+public class GetDiseasesFromKEGG {
 	public static void main(String[] args) {
-		GetDrugsFromKEGG kegg = new GetDrugsFromKEGG();
+		GetDiseasesFromKEGG kegg = new GetDiseasesFromKEGG();
 		try {
-
 			/**
 			 * 测试一条数据
 			 */
-			String url = "http://www.kegg.jp/dbget-bin/www_bget?dr:D00001";
+			String url = "http://www.kegg.jp/dbget-bin/www_bget?ds:H00001";
 			System.out.println(kegg.getContentPr(url));
 
-			kegg.getDrugs("Kegg_Drugs_AllDatas.txt");
+			/**
+			 * 所有数据
+			 */
+			kegg.getDisease("Kegg_Diseases_AllData.txt");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -44,6 +47,7 @@ public class GetDrugsFromKEGG {
 		String result = "";
 		try {
 			doc = Jsoup.connect(url).timeout(100000).get();
+
 			// doc is null
 			if (doc == null) {
 				return null;
@@ -56,18 +60,17 @@ public class GetDrugsFromKEGG {
 					return null;
 			}
 
+			// tbodys size is <=2
 			Elements tbodys = doc.getElementsByTag("tbody");
-			Element tbody = null;
-			if (tbodys.size() > 2) {
-				tbody = tbodys.get(2);
-			} else {
-				return result;
-			}
+			if (tbodys.size() <= 2)
+				return null;
 
+			Element tbody = tbodys.get(2);
 			Elements nobrs = tbody.getElementsByTag("nobr");
 			for (Element nobr : nobrs) {
 				String nobr_str = nobr.ownText();
-				// 获取name
+
+				// 获取drug name
 				if (nobr_str.equals("Name")) {
 					Element other_tr = nobr.parent().nextElementSibling();
 					Elements div_tags = other_tr.getElementsByTag("div");
@@ -77,8 +80,8 @@ public class GetDrugsFromKEGG {
 					}
 				}
 
-				// 获取Formula
-				if (nobr_str.equals("Formula")) {
+				// 获取Description
+				if (nobr_str.equals("Description")) {
 					result += "\t";
 					Element other_tr = nobr.parent().nextElementSibling();
 					Elements div_tags = other_tr.getElementsByTag("div");
@@ -86,8 +89,8 @@ public class GetDrugsFromKEGG {
 					result += names[0];
 				}
 
-				// 获取Exact mass
-				if (nobr_str.equals("Exact mass")) {
+				// 获取Category
+				if (nobr_str.equals("Category")) {
 					result += "\t";
 					Element other_tr = nobr.parent().nextElementSibling();
 					Elements div_tags = other_tr.getElementsByTag("div");
@@ -95,31 +98,35 @@ public class GetDrugsFromKEGG {
 					result += names[0];
 				}
 
-				// 获取Mol weight
-				if (nobr_str.equals("Mol weight")) {
+				// Drug
+				if (nobr_str.equals("Drug")) {
 					result += "\t";
 					Element other_tr = nobr.parent().nextElementSibling();
-					Elements div_tags = other_tr.getElementsByTag("div");
-					String[] names = div_tags.get(0).ownText().split("<br>");
-					result += names[0];
+					Elements a_tags = other_tr.getElementsByTag("a");
+					if (a_tags != null) {
+						// result += ",";// 与前面的串分隔开，Cas number不含a标签
+						for (Element a : a_tags) {
+							result += (a.ownText() + ",");
+						}
+					}
 				}
+
+				// Gene
 
 				// Other DBs
 				if (nobr_str.equals("Other DBs")) {
 					result += "\t";
-					Element other_tr = nobr.parent().nextElementSibling();
+					Element other_tr = nobr.parent().parent();
 					Elements div_tags = other_tr.getElementsByTag("div");
-					for (int i = 0; i < div_tags.size(); i++) {
-						result += (div_tags.get(i).ownText());
-						if (i > 0
-								&& div_tags.get(i).getElementsByTag("a") != null) {
-							// result += ",";// 与前面的串分隔开，Cas number不含a标签
-							for (Element a : div_tags.get(i).getElementsByTag(
-									"a")) {
+					for (Element div : div_tags) {
+						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
+						if (div.ownText().trim().contains(":")) {
+							result += div.ownText().trim();
+							for (Element a : div.nextElementSibling()
+									.getElementsByTag("a")) {
 								result += (a.ownText() + ",");
 							}
-							// cas number强行分割开
-							result += ",";
+							result += ";";
 						}
 					}
 				}
@@ -130,26 +137,27 @@ public class GetDrugsFromKEGG {
 		return result;
 	}
 
-	public void getDrugs(String writepath) throws IOException {
+	public void getDisease(String writepath) throws IOException {
 		FileOutputStream outputStream = new FileOutputStream(
 				new File(writepath));
-		// int id = 1, max = 10601;
-		int id = 1, max = 10808;
+		// int id = 1, max = 1437;
+		int id = 1, max = 1698;
 
 		// 表头
-		outputStream.write(("ID\tName\tFormula\tExact mass\tMol weight\n")
-				.getBytes());
+		outputStream
+				.write(("ID\tName\tDescription\tCategory\tDrug\tOther DBs\n")
+						.getBytes());
 		// 注意flush
 		outputStream.flush();
 
 		DecimalFormat df = new DecimalFormat("00000");
 		String url = "";
-		while (id <= max) {
-			url = "http://www.kegg.jp/dbget-bin/www_bget?dr:D" + df.format(id);
+		while (id < max) {
+			url = "http://www.kegg.jp/dbget-bin/www_bget?ds:H" + df.format(id);
 			System.out.println(url);
 			String result = getContentPr(url);
 			if (result != null && result != "") {
-				outputStream.write(("D" + df.format(id) + "\t" + result + "\n")
+				outputStream.write(("H" + df.format(id) + "\t" + result + "\n")
 						.getBytes());
 				// 注意flush
 				outputStream.flush();
