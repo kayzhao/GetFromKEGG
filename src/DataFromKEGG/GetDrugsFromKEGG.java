@@ -1,4 +1,5 @@
 package DataFromKEGG;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import org.jsoup.select.Elements;
  * Formula<br>
  * Exact mass<br>
  * Mol weight<br>
+ * Other DBs
  */
 public class GetDrugsFromKEGG {
 	public static void main(String[] args) {
@@ -141,8 +143,9 @@ public class GetDrugsFromKEGG {
 		int id = 1, max = 10808;
 
 		// 表头
-		outputStream.write(("ID\tName\tFormula\tExact mass\tMol weight\n")
-				.getBytes());
+		outputStream
+				.write(("ID\tName\tFormula\tExact mass\tMol weight\tOther DBs\n")
+						.getBytes());
 		// 注意flush
 		outputStream.flush();
 

@@ -33,7 +33,7 @@ public class OMIM_to_DrugBank {
 
 			// kegg.getOMIM2DrugBanks();
 
-			kegg.getOMIM2DB("disease/OMIM_DrugBank.txt", "OMIM_DrugBank.txt");
+			kegg.getOMIM2DB("disease/DrugBanks_OMIMs.txt", "disease/OMIM_DrugBank.txt");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
