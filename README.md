@@ -8,12 +8,12 @@ Get data from kegg online database using jsoup jar
 
 **Data Column**
 
-	- KEGG Disease ID
-	- Name
-	- Description
-	- Category
-	- Drug
-	- Other DBs
+	KEGG Disease ID
+	Name
+	Description
+	Category
+	Drug
+	Other DBs
 
 ---
 
@@ -22,11 +22,11 @@ Get data from kegg online database using jsoup jar
 
 **Data Column**
 
-	- KEGG DrugGroup ID
-	- Name
-	- Member
-	- Remark
-	- Comment
+	KEGG DrugGroup ID
+	Name
+	Member
+	Remark
+	Comment
 
 ---
 
@@ -35,12 +35,12 @@ Get data from kegg online database using jsoup jar
 
 **Data Column**
 
-	- KEGG Drug ID
-	- Name
-	- Formula
-	- Exact mass
-	- Mol weight
-	- Other DBs
+	KEGG Drug ID
+	Name
+	Formula
+	Exact mass
+	Mol weight
+	Other DBs
 
 ---
 
@@ -60,7 +60,7 @@ Get data from kegg online database using jsoup jar
 
 - Extract the Data Of KEGG Data
 
-		1. Get the (**disease id - drug ids - omim ids**) data  from **Diseases Data**
-		2. Get the (**drug id - drugbank id**) data from **Drugs Data**
-		3. Get the (**druggroup id - drug id**) data from **DrugGroup Data**
+		1. Get the (disease id - drug ids - omim ids) data  from Diseases Data
+		2. Get the (drug id - drugbank id) data from Drugs Data
+		3. Get the (druggroup id - drug id) data from DrugGroup Data
 		4. Get the OMIM IDs to DrugBank associations data
