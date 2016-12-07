@@ -12,7 +12,10 @@ Get data from kegg online database using jsoup jar
 	Name
 	Description
 	Category
+	Gene
 	Drug
+	Marker
+	Reference
 	Other DBs
 
 ---

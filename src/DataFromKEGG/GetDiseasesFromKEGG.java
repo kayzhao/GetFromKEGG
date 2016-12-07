@@ -1,8 +1,11 @@
 package DataFromKEGG;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+
+import javax.xml.soap.Text;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +18,10 @@ import org.jsoup.select.Elements;
  * Name<br>
  * Description<br>
  * Category<br>
+ * Gene<br>
  * Drug<br>
+ * Marker<br>
+ * Reference<br>
  * Other DBs
  */
 public class GetDiseasesFromKEGG {
@@ -71,7 +77,7 @@ public class GetDiseasesFromKEGG {
 			for (Element nobr : nobrs) {
 				String nobr_str = nobr.ownText();
 
-				// 获取drug name
+				// 获取name
 				if (nobr_str.equals("Name")) {
 					Element other_tr = nobr.parent().nextElementSibling();
 					Elements div_tags = other_tr.getElementsByTag("div");
@@ -90,13 +96,64 @@ public class GetDiseasesFromKEGG {
 					result += names[0];
 				}
 
-				// 获取Category
+				// Category
 				if (nobr_str.equals("Category")) {
 					result += "\t";
 					Element other_tr = nobr.parent().nextElementSibling();
 					Elements div_tags = other_tr.getElementsByTag("div");
 					String[] names = div_tags.get(0).ownText().split("<br>");
 					result += names[0];
+				}
+
+				// Gene
+				if (nobr_str.equals("Gene")) {
+					result += "\t";
+					Element other_tr = nobr.parent().parent();
+					Elements div_tags = other_tr.getElementsByTag("div");
+					for (Element div : div_tags) {
+						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
+						String d_text = div.ownText().trim();
+						if (d_text.length() > 0
+								&& (d_text.contains("HSA") || d_text
+										.contains("KO"))) {
+							String[] texts = div.html().split("\\[|\\]");
+							for (String t : texts) {
+								t = t.replace("\n", " ").replace("<br />", "");
+								// System.out.println(t);
+								// gene
+								if (t.length() > 0 && !(" ").equals(t)
+										&& !t.contains("href")) {
+									result += ("|" + t.trim() + ",");
+									continue;
+								}
+								// a links
+								if (t.contains("href")) {
+									// t = t.replace(" ", "");
+									// System.out.println(t);
+									if (t.contains("KO:")) {
+										for (int i = 0; i < t.length();) {
+											t = t.substring(i);
+											result += ("KO:"
+													+ t.substring(
+															t.indexOf(">") + 1,
+															t.indexOf("</a>")) + ",");
+											i = t.indexOf("</a>") + 4;
+										}
+									} else {
+										for (int i = 0; i < t.length();) {
+											t = t.substring(i);
+											result += ("HSA:"
+													+ t.substring(
+															t.indexOf(">") + 1,
+															t.indexOf("</a>")) + ",");
+											i = t.indexOf("</a>") + 4;
+										}
+									}
+								}
+							}
+							result += ";";
+						}
+					}
 				}
 
 				// Drug
@@ -112,7 +169,56 @@ public class GetDiseasesFromKEGG {
 					}
 				}
 
-				// Gene
+				// Marker
+				if (nobr_str.equals("Marker")) {
+					result += "\t";
+					Element other_tr = nobr.parent().parent();
+					Elements div_tags = other_tr.getElementsByTag("div");
+					for (Element div : div_tags) {
+						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
+						String d_text = div.ownText().trim();
+						if (d_text.length() > 0
+								&& (d_text.contains("HSA") || d_text
+										.contains("KO"))) {
+							String[] texts = div.html().split("\\[|\\]");
+							for (String t : texts) {
+								t = t.replace("\n", " ").replace("<br />", "");
+								// System.out.println(t);
+								// gene
+								if (t.length() > 0 && !(" ").equals(t)
+										&& !t.contains("href")) {
+									result += ("|" + t.trim() + ",");
+									continue;
+								}
+								// a links
+								if (t.contains("href")) {
+									// t = t.replace(" ", "");
+									System.out.println(t);
+									if (t.contains("KO:")) {
+										for (int i = 0; i < t.length();) {
+											t = t.substring(i);
+											result += ("KO:"
+													+ t.substring(
+															t.indexOf(">") + 1,
+															t.indexOf("</a>")) + ",");
+											i = t.indexOf("</a>") + 4;
+										}
+									} else {
+										for (int i = 0; i < t.length();) {
+											t = t.substring(i);
+											result += ("HSA:"
+													+ t.substring(
+															t.indexOf(">") + 1,
+															t.indexOf("</a>")) + ",");
+											i = t.indexOf("</a>") + 4;
+										}
+									}
+								}
+							}
+							result += ";";
+						}
+					}
+				}
 
 				// Other DBs
 				if (nobr_str.equals("Other DBs")) {
@@ -131,6 +237,19 @@ public class GetDiseasesFromKEGG {
 						}
 					}
 				}
+
+				// Reference
+				if (nobr_str.equals("Reference")) {
+					result += "\t";
+					Element other_tr = nobr.parent().nextElementSibling();
+					Elements a_tags = other_tr.getElementsByTag("a");
+					if (a_tags != null) {
+						// result += ",";// 与前面的串分隔开，Cas number不含a标签
+						for (Element a : a_tags) {
+							result += ("PMID:" + a.ownText() + ",");
+						}
+					}
+				}
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -146,7 +265,7 @@ public class GetDiseasesFromKEGG {
 
 		// 表头
 		outputStream
-				.write(("ID\tName\tDescription\tCategory\tDrug\tOther DBs\n")
+				.write(("ID\tName\tDescription\tCategory\tGene\tDrug\tMarker\tOther DBs\n")
 						.getBytes());
 		// 注意flush
 		outputStream.flush();
