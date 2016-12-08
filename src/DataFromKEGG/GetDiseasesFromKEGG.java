@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.soap.Text;
 
@@ -25,6 +28,12 @@ import org.jsoup.select.Elements;
  * Other DBs
  */
 public class GetDiseasesFromKEGG {
+	/**
+	 * column name
+	 */
+	String[] colname = { "ID", "Name", "Description", "Category", "Gene",
+			"Drug", "Marker", "Reference", "Other DBs" };
+
 	public static void main(String[] args) {
 		GetDiseasesFromKEGG kegg = new GetDiseasesFromKEGG();
 		try {
@@ -37,7 +46,7 @@ public class GetDiseasesFromKEGG {
 			/**
 			 * 所有数据
 			 */
-			kegg.getDisease("Kegg_Diseases_AllData.txt");
+			kegg.getDisease("Kegg_Diseases_All_Data.txt");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -52,6 +61,7 @@ public class GetDiseasesFromKEGG {
 	public String getContentPr(String url) {
 		Document doc;
 		String result = "";
+
 		try {
 			doc = Jsoup.connect(url).timeout(100000).get();
 
@@ -72,6 +82,17 @@ public class GetDiseasesFromKEGG {
 			if (tbodys.size() <= 2)
 				return null;
 
+			// 初始化column_name list
+			List<String> columns = new ArrayList<String>();
+			for (String string : colname) {
+				columns.add(string);
+			}
+			// 初始化 result array
+			String[] res_arr = new String[columns.size()];
+			for (int i = 0; i < res_arr.length; i++) {
+				res_arr[i] = "\t";
+			}
+
 			Element tbody = tbodys.get(2);
 			Elements nobrs = tbody.getElementsByTag("nobr");
 			for (Element nobr : nobrs) {
@@ -83,31 +104,29 @@ public class GetDiseasesFromKEGG {
 					Elements div_tags = other_tr.getElementsByTag("div");
 					String[] names = div_tags.get(1).ownText().split("<br>");
 					for (String name : names) {
-						result += name;
+						res_arr[columns.indexOf("Name")] += name;
 					}
 				}
 
 				// 获取Description
 				if (nobr_str.equals("Description")) {
-					result += "\t";
 					Element other_tr = nobr.parent().nextElementSibling();
 					Elements div_tags = other_tr.getElementsByTag("div");
 					String[] names = div_tags.get(0).ownText().split("<br>");
-					result += names[0];
+					res_arr[columns.indexOf("Description")] += names[0];
 				}
 
 				// Category
 				if (nobr_str.equals("Category")) {
-					result += "\t";
 					Element other_tr = nobr.parent().nextElementSibling();
 					Elements div_tags = other_tr.getElementsByTag("div");
 					String[] names = div_tags.get(0).ownText().split("<br>");
-					result += names[0];
+					res_arr[columns.indexOf("Category")] += names[0];
 				}
 
 				// Gene
 				if (nobr_str.equals("Gene")) {
-					result += "\t";
+					String gene = "";
 					Element other_tr = nobr.parent().parent();
 					Elements div_tags = other_tr.getElementsByTag("div");
 					for (Element div : div_tags) {
@@ -123,7 +142,7 @@ public class GetDiseasesFromKEGG {
 								// gene
 								if (t.length() > 0 && !(" ").equals(t)
 										&& !t.contains("href")) {
-									result += ("|" + t.trim() + ",");
+									gene += ("|" + t.trim() + ",");
 									continue;
 								}
 								// a links
@@ -133,7 +152,7 @@ public class GetDiseasesFromKEGG {
 									if (t.contains("KO:")) {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											result += ("KO:"
+											gene += ("KO:"
 													+ t.substring(
 															t.indexOf(">") + 1,
 															t.indexOf("</a>")) + ",");
@@ -142,7 +161,7 @@ public class GetDiseasesFromKEGG {
 									} else {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											result += ("HSA:"
+											gene += ("HSA:"
 													+ t.substring(
 															t.indexOf(">") + 1,
 															t.indexOf("</a>")) + ",");
@@ -151,27 +170,31 @@ public class GetDiseasesFromKEGG {
 									}
 								}
 							}
-							result += ";";
+							gene += ";";
 						}
 					}
+
+					res_arr[columns.indexOf("Gene")] += gene;
 				}
 
 				// Drug
 				if (nobr_str.equals("Drug")) {
-					result += "\t";
+					String drugs = "";
 					Element other_tr = nobr.parent().nextElementSibling();
 					Elements a_tags = other_tr.getElementsByTag("a");
 					if (a_tags != null) {
 						// result += ",";// 与前面的串分隔开，Cas number不含a标签
 						for (Element a : a_tags) {
-							result += (a.ownText() + ",");
+							drugs += (a.ownText() + ",");
 						}
 					}
+					res_arr[columns.indexOf("Drug")] += drugs;
 				}
 
 				// Marker
 				if (nobr_str.equals("Marker")) {
-					result += "\t";
+					String marker = "";
+					// result += "\t";
 					Element other_tr = nobr.parent().parent();
 					Elements div_tags = other_tr.getElementsByTag("div");
 					for (Element div : div_tags) {
@@ -187,17 +210,17 @@ public class GetDiseasesFromKEGG {
 								// gene
 								if (t.length() > 0 && !(" ").equals(t)
 										&& !t.contains("href")) {
-									result += ("|" + t.trim() + ",");
+									marker += ("|" + t.trim() + ",");
 									continue;
 								}
 								// a links
 								if (t.contains("href")) {
 									// t = t.replace(" ", "");
-									System.out.println(t);
+									// System.out.println(t);
 									if (t.contains("KO:")) {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											result += ("KO:"
+											marker += ("KO:"
 													+ t.substring(
 															t.indexOf(">") + 1,
 															t.indexOf("</a>")) + ",");
@@ -206,7 +229,7 @@ public class GetDiseasesFromKEGG {
 									} else {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											result += ("HSA:"
+											marker += ("HSA:"
 													+ t.substring(
 															t.indexOf(">") + 1,
 															t.indexOf("</a>")) + ",");
@@ -215,41 +238,59 @@ public class GetDiseasesFromKEGG {
 									}
 								}
 							}
-							result += ";";
+							marker += ";";
 						}
 					}
+					res_arr[columns.indexOf("Marker")] += marker;
 				}
 
 				// Other DBs
 				if (nobr_str.equals("Other DBs")) {
-					result += "\t";
+					String xrefs = "";
 					Element other_tr = nobr.parent().parent();
 					Elements div_tags = other_tr.getElementsByTag("div");
 					for (Element div : div_tags) {
 						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
 						if (div.ownText().trim().contains(":")) {
-							result += div.ownText().trim();
-							for (Element a : div.nextElementSibling()
-									.getElementsByTag("a")) {
-								result += (a.ownText() + ",");
+							if (div.ownText().trim().startsWith("ICD")) {
+								xrefs += div.ownText().trim();
+								for (Element a : div.nextElementSibling()
+										.getElementsByTag("a")) {
+									for (String a_text : a.ownText().split(" ")) {
+										xrefs += (a_text + ",");
+									}
+								}
+							} else {
+								xrefs += div.ownText().trim();
+								for (Element a : div.nextElementSibling()
+										.getElementsByTag("a")) {
+									xrefs += (a.ownText() + ",");
+								}
 							}
-							result += ";";
+							xrefs += ";";
 						}
 					}
+					res_arr[columns.indexOf("Other DBs")] += xrefs;
 				}
 
 				// Reference
 				if (nobr_str.equals("Reference")) {
-					result += "\t";
+					String ref = "";
+					// result += "\t";
 					Element other_tr = nobr.parent().nextElementSibling();
 					Elements a_tags = other_tr.getElementsByTag("a");
 					if (a_tags != null) {
 						// result += ",";// 与前面的串分隔开，Cas number不含a标签
 						for (Element a : a_tags) {
-							result += ("PMID:" + a.ownText() + ",");
+							ref += ("PMID:" + a.ownText() + ",");
 						}
 					}
+					res_arr[columns.indexOf("Reference")] += ref;
 				}
+			}
+
+			for (int j = 1; j < res_arr.length; j++) {
+				result += res_arr[j];
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -263,10 +304,13 @@ public class GetDiseasesFromKEGG {
 		// int id = 1, max = 1437;
 		int id = 1, max = 1698;
 
+		String head = "";
+		for (int i = 0; i < colname.length; i++) {
+			head += (colname[i] + "\t");
+		}
+		head = "#" + head.substring(0, head.length() - 1) + "\n";
 		// 表头
-		outputStream
-				.write(("ID\tName\tDescription\tCategory\tGene\tDrug\tMarker\tOther DBs\n")
-						.getBytes());
+		outputStream.write(head.getBytes());
 		// 注意flush
 		outputStream.flush();
 
@@ -277,7 +321,7 @@ public class GetDiseasesFromKEGG {
 			System.out.println(url);
 			String result = getContentPr(url);
 			if (result != null && result != "") {
-				outputStream.write(("H" + df.format(id) + "\t" + result + "\n")
+				outputStream.write(("H" + df.format(id) + result + "\n")
 						.getBytes());
 				// 注意flush
 				outputStream.flush();
