@@ -142,7 +142,7 @@ public class GetDiseasesFromKEGG {
 								// gene
 								if (t.length() > 0 && !(" ").equals(t)
 										&& !t.contains("href")) {
-									gene += ("|" + t.trim() + ",");
+									gene += ("|" + t.trim() + "%");
 									continue;
 								}
 								// a links
@@ -155,7 +155,7 @@ public class GetDiseasesFromKEGG {
 											gene += ("KO:"
 													+ t.substring(
 															t.indexOf(">") + 1,
-															t.indexOf("</a>")) + ",");
+															t.indexOf("</a>")) + "%");
 											i = t.indexOf("</a>") + 4;
 										}
 									} else {
@@ -164,7 +164,7 @@ public class GetDiseasesFromKEGG {
 											gene += ("HSA:"
 													+ t.substring(
 															t.indexOf(">") + 1,
-															t.indexOf("</a>")) + ",");
+															t.indexOf("</a>")) + "%");
 											i = t.indexOf("</a>") + 4;
 										}
 									}
@@ -210,7 +210,7 @@ public class GetDiseasesFromKEGG {
 								// gene
 								if (t.length() > 0 && !(" ").equals(t)
 										&& !t.contains("href")) {
-									marker += ("|" + t.trim() + ",");
+									marker += ("|" + t.trim() + "%");
 									continue;
 								}
 								// a links
@@ -223,7 +223,7 @@ public class GetDiseasesFromKEGG {
 											marker += ("KO:"
 													+ t.substring(
 															t.indexOf(">") + 1,
-															t.indexOf("</a>")) + ",");
+															t.indexOf("</a>")) + "%");
 											i = t.indexOf("</a>") + 4;
 										}
 									} else {
@@ -232,7 +232,7 @@ public class GetDiseasesFromKEGG {
 											marker += ("HSA:"
 													+ t.substring(
 															t.indexOf(">") + 1,
-															t.indexOf("</a>")) + ",");
+															t.indexOf("</a>")) + "%");
 											i = t.indexOf("</a>") + 4;
 										}
 									}
@@ -302,7 +302,7 @@ public class GetDiseasesFromKEGG {
 		FileOutputStream outputStream = new FileOutputStream(
 				new File(writepath));
 		// int id = 1, max = 1437;
-		int id = 1, max = 1698;
+		int id = 1, max = 1710;
 
 		String head = "";
 		for (int i = 0; i < colname.length; i++) {
