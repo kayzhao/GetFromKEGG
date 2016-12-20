@@ -12,9 +12,10 @@
 hs_err_pid*
 
 *.txt
-.settings/
-.classpath
-.project
 
 # the bin folder
 bin/
+/.classpath
+/.project
+/desktop.ini
+/bin/*
