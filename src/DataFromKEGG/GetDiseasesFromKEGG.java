@@ -31,8 +31,7 @@ public class GetDiseasesFromKEGG {
 	/**
 	 * column name
 	 */
-	String[] colname = { "ID", "Name", "Description", "Category", "Gene",
-			"Drug", "Marker", "Reference", "Other DBs" };
+	String[] colname = { "ID", "Name", "Description", "Category", "Gene", "Drug", "Marker", "Reference", "Other DBs" };
 
 	public static void main(String[] args) {
 		GetDiseasesFromKEGG kegg = new GetDiseasesFromKEGG();
@@ -132,16 +131,13 @@ public class GetDiseasesFromKEGG {
 					for (Element div : div_tags) {
 						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
 						String d_text = div.ownText().trim();
-						if (d_text.length() > 0
-								&& (d_text.contains("HSA") || d_text
-										.contains("KO"))) {
+						if (d_text.length() > 0 && (d_text.contains("HSA") || d_text.contains("KO"))) {
 							String[] texts = div.html().split("\\[|\\]");
 							for (String t : texts) {
 								t = t.replace("\n", " ").replace("<br />", "");
 								// System.out.println(t);
 								// gene
-								if (t.length() > 0 && !(" ").equals(t)
-										&& !t.contains("href")) {
+								if (t.length() > 0 && !(" ").equals(t) && !t.contains("href")) {
 									gene += ("|" + t.trim() + "%");
 									continue;
 								}
@@ -152,19 +148,13 @@ public class GetDiseasesFromKEGG {
 									if (t.contains("KO:")) {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											gene += ("KO:"
-													+ t.substring(
-															t.indexOf(">") + 1,
-															t.indexOf("</a>")) + "%");
+											gene += ("KO:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
 											i = t.indexOf("</a>") + 4;
 										}
 									} else {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											gene += ("HSA:"
-													+ t.substring(
-															t.indexOf(">") + 1,
-															t.indexOf("</a>")) + "%");
+											gene += ("HSA:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
 											i = t.indexOf("</a>") + 4;
 										}
 									}
@@ -181,11 +171,40 @@ public class GetDiseasesFromKEGG {
 				if (nobr_str.equals("Drug")) {
 					String drugs = "";
 					Element other_tr = nobr.parent().nextElementSibling();
-					Elements a_tags = other_tr.getElementsByTag("a");
-					if (a_tags != null) {
-						// result += ",";// 与前面的串分隔开，Cas number不含a标签
-						for (Element a : a_tags) {
-							drugs += (a.ownText() + ",");
+					Elements div_tags = other_tr.getElementsByTag("div");
+
+					for (Element div : div_tags) {
+						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
+						String d_text = div.ownText().trim();
+						if (d_text.length() > 0 && (d_text.contains("DG") || d_text.contains("DR"))) {
+							String[] texts = div.html().split("\\[|\\]");
+							for (String t : texts) {
+								t = t.replace("\n", " ").replace("<br />", "");
+								// System.out.println(t);
+								if (t.length() > 0 && !(" ").equals(t) && !t.contains("href")) {
+									drugs += ("|" + t.trim() + "%");
+									continue;
+								}
+								// a links
+								if (t.contains("href")) {
+									// t = t.replace(" ", "");
+									// System.out.println(t);
+									if (t.contains("DG:")) {
+										for (int i = 0; i < t.length();) {
+											t = t.substring(i);
+											drugs += ("DG:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
+											i = t.indexOf("</a>") + 4;
+										}
+									} else {
+										for (int i = 0; i < t.length();) {
+											t = t.substring(i);
+											drugs += ("DR:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
+											i = t.indexOf("</a>") + 4;
+										}
+									}
+								}
+							}
+							drugs += ";";
 						}
 					}
 					res_arr[columns.indexOf("Drug")] += drugs;
@@ -200,16 +219,13 @@ public class GetDiseasesFromKEGG {
 					for (Element div : div_tags) {
 						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
 						String d_text = div.ownText().trim();
-						if (d_text.length() > 0
-								&& (d_text.contains("HSA") || d_text
-										.contains("KO"))) {
+						if (d_text.length() > 0 && (d_text.contains("HSA") || d_text.contains("KO"))) {
 							String[] texts = div.html().split("\\[|\\]");
 							for (String t : texts) {
 								t = t.replace("\n", " ").replace("<br />", "");
 								// System.out.println(t);
 								// gene
-								if (t.length() > 0 && !(" ").equals(t)
-										&& !t.contains("href")) {
+								if (t.length() > 0 && !(" ").equals(t) && !t.contains("href")) {
 									marker += ("|" + t.trim() + "%");
 									continue;
 								}
@@ -220,19 +236,15 @@ public class GetDiseasesFromKEGG {
 									if (t.contains("KO:")) {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											marker += ("KO:"
-													+ t.substring(
-															t.indexOf(">") + 1,
-															t.indexOf("</a>")) + "%");
+											marker += ("KO:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>"))
+													+ "%");
 											i = t.indexOf("</a>") + 4;
 										}
 									} else {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											marker += ("HSA:"
-													+ t.substring(
-															t.indexOf(">") + 1,
-															t.indexOf("</a>")) + "%");
+											marker += ("HSA:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>"))
+													+ "%");
 											i = t.indexOf("</a>") + 4;
 										}
 									}
@@ -254,16 +266,14 @@ public class GetDiseasesFromKEGG {
 						if (div.ownText().trim().contains(":")) {
 							if (div.ownText().trim().startsWith("ICD")) {
 								xrefs += div.ownText().trim();
-								for (Element a : div.nextElementSibling()
-										.getElementsByTag("a")) {
+								for (Element a : div.nextElementSibling().getElementsByTag("a")) {
 									for (String a_text : a.ownText().split(" ")) {
 										xrefs += (a_text + ",");
 									}
 								}
 							} else {
 								xrefs += div.ownText().trim();
-								for (Element a : div.nextElementSibling()
-										.getElementsByTag("a")) {
+								for (Element a : div.nextElementSibling().getElementsByTag("a")) {
 									xrefs += (a.ownText() + ",");
 								}
 							}
@@ -299,10 +309,10 @@ public class GetDiseasesFromKEGG {
 	}
 
 	public void getDisease(String writepath) throws IOException {
-		FileOutputStream outputStream = new FileOutputStream(
-				new File(writepath));
+		FileOutputStream outputStream = new FileOutputStream(new File(writepath));
 		// int id = 1, max = 1437;
-		int id = 1, max = 1710;
+		// int id = 1, max = 1710;
+		int id = 1710, max = 1716;
 
 		String head = "";
 		for (int i = 0; i < colname.length; i++) {
@@ -321,8 +331,7 @@ public class GetDiseasesFromKEGG {
 			System.out.println(url);
 			String result = getContentPr(url);
 			if (result != null && result != "") {
-				outputStream.write(("H" + df.format(id) + result + "\n")
-						.getBytes());
+				outputStream.write(("H" + df.format(id) + result + "\n").getBytes());
 				// 注意flush
 				outputStream.flush();
 			}
