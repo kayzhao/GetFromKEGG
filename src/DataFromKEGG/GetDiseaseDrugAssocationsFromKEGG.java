@@ -32,13 +32,14 @@ public class GetDiseaseDrugAssocationsFromKEGG {
 			/**
 			 * 测试一条数据
 			 */
-			String url = "http://www.kegg.jp/dbget-bin/www_bget?ds:H00001";
-			System.out.println(kegg.getContentPr(url));
+			String id = "H00334";
+			String url = "http://www.kegg.jp/dbget-bin/www_bget?ds:" + id;
+			System.out.println(id + "\t" + kegg.getContentPr(url));
 
 			/**
 			 * 所有数据
 			 */
-			kegg.getDisease("Kegg_Diseases_Drugs_Data.txt");
+			// kegg.getDisease("Kegg_Diseases_Drugs_Data.txt");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -108,20 +109,31 @@ public class GetDiseaseDrugAssocationsFromKEGG {
 									drugs += ("|" + t.trim() + "%");
 									continue;
 								}
+
 								// a links
 								if (t.contains("href")) {
 									// t = t.replace(" ", "");
 									// System.out.println(t);
-									if (t.contains("DG:")) {
+									if (t.contains("DG")) {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											drugs += ("DG:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
+											if (t.contains("<a")) {
+												drugs += ("DG:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>"))
+														+ "%");
+											} else {
+												break;
+											}
 											i = t.indexOf("</a>") + 4;
 										}
-									} else {
+									} else if (t.contains("DR")) {
 										for (int i = 0; i < t.length();) {
 											t = t.substring(i);
-											drugs += ("DR:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
+											if (t.contains("<a")) {
+												drugs += ("DR:" + t.substring(t.indexOf(">") + 1, t.indexOf("</a>"))
+														+ "%");
+											} else {
+												break;
+											}
 											i = t.indexOf("</a>") + 4;
 										}
 									}
