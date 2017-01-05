@@ -16,6 +16,9 @@ The latest KEGG-Disease Data is [20161209 version](https://raw.githubusercontent
 	Category
 	Gene
 	Drug
+	Env factor
+	Carcinogen
+	Comment
 	Marker
 	Reference
 	Other DBs

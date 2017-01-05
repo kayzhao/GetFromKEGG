@@ -20,6 +20,7 @@ import org.jsoup.select.Elements;
  * Gene<br>
  * Drug<br>
  * Env factor<br>
+ * Carcinogen<br>
  * Comment<br>
  * Marker<br>
  * Reference<br>
@@ -38,13 +39,14 @@ public class GetDiseasesFromKEGG {
 			/**
 			 * 测试一条数据
 			 */
-			String id = "H00001";
+			String id = "H00292";
 			String url = "http://www.kegg.jp/dbget-bin/www_bget?ds:" + id;
 			System.out.println(id + "\t" + kegg.getContentPr(url));
 			/**
 			 * 所有数据
 			 */
-			kegg.getDisease("Kegg_Diseases_All_Data_" + System.currentTimeMillis() + ".txt");
+			// kegg.getDisease("Kegg_Diseases_All_Data_" +
+			// System.currentTimeMillis() + ".txt");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -130,7 +132,8 @@ public class GetDiseasesFromKEGG {
 					for (Element div : div_tags) {
 						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
 						String d_text = div.ownText().trim();
-						if (d_text.length() > 0 && (d_text.contains("HSA") || d_text.contains("KO"))) {
+						System.out.println(d_text);
+						if (d_text.length() > 0) {
 							String[] texts = div.html().split("\\[|\\]");
 							for (String t : texts) {
 								t = t.replace("\n", " ").replace("<br />", "");
@@ -171,7 +174,7 @@ public class GetDiseasesFromKEGG {
 					for (Element div : div_tags) {
 						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
 						String d_text = div.ownText().trim();
-						if (d_text.length() > 0 && (d_text.contains("<a") || d_text.contains("</a>"))) {
+						if (d_text.length() > 0) {
 							String[] texts = div.html().split("\\[|\\]");
 							for (String t : texts) {
 								t = t.replace("\n", " ").replace("<br />", "");
@@ -228,11 +231,11 @@ public class GetDiseasesFromKEGG {
 					for (Element div : div_tags) {
 						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
 						String d_text = div.ownText().trim();
-						if (d_text.length() > 0 && (d_text.contains("DG") || d_text.contains("DR"))) {
+						if (d_text.length() > 0) {
 							String[] texts = div.html().split("\\[|\\]");
 							for (String t : texts) {
 								t = t.replace("\n", " ").replace("<br />", "");
-								// System.out.println(t);
+								System.out.println(t);
 								if (t.length() > 0 && !(" ").equals(t) && !t.contains("href")) {
 									drugs += ("|" + t.trim() + "%");
 									continue;
@@ -267,7 +270,7 @@ public class GetDiseasesFromKEGG {
 					for (Element div : div_tags) {
 						// 如果div包含":"，则他的下一个兄弟中的a标签里的元素都是对应的Other DBs ID
 						String d_text = div.ownText().trim();
-						if (d_text.length() > 0 && (d_text.contains("HSA") || d_text.contains("KO"))) {
+						if (d_text.length() > 0) {
 							String[] texts = div.html().split("\\[|\\]");
 							for (String t : texts) {
 								t = t.replace("\n", " ").replace("<br />", "");
@@ -318,6 +321,7 @@ public class GetDiseasesFromKEGG {
 									xrefs += (a.ownText() + ",");
 								}
 							}
+							xrefs += ";";
 						}
 					}
 					res_arr[columns.indexOf("Other DBs")] += xrefs;
