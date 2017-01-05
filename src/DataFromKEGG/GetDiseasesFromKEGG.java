@@ -140,7 +140,7 @@ public class GetDiseasesFromKEGG {
 								// System.out.println(t);
 								// gene
 								if (t.length() > 0 && !(" ").equals(t) && !t.contains("href")) {
-									gene += ("|" + t.trim() + "%");
+									gene += ("|" + t.trim() + "#");
 									continue;
 								}
 								// a links
@@ -152,7 +152,7 @@ public class GetDiseasesFromKEGG {
 									for (int i = 0; i < t.length();) {
 										t = t.substring(i);
 										if (t.contains("<a"))
-											gene += (type + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
+											gene += (type + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "#");
 										else
 											break;
 										i = t.indexOf("</a>") + 4;
@@ -180,7 +180,7 @@ public class GetDiseasesFromKEGG {
 								t = t.replace("\n", " ").replace("<br />", "");
 								// System.out.println(t);
 								if (t.length() > 0 && !(" ").equals(t) && !t.contains("href")) {
-									envfs += ("|" + t.trim() + "%");
+									envfs += ("|" + t.trim() + "#");
 									continue;
 								}
 
@@ -192,7 +192,7 @@ public class GetDiseasesFromKEGG {
 									for (int i = 0; i < t.length();) {
 										t = t.substring(i);
 										if (t.contains("<a"))
-											envfs += (type + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
+											envfs += (type + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "#");
 										else
 											break;
 										i = t.indexOf("</a>") + 4;
@@ -237,7 +237,7 @@ public class GetDiseasesFromKEGG {
 								t = t.replace("\n", " ").replace("<br />", "");
 								System.out.println(t);
 								if (t.length() > 0 && !(" ").equals(t) && !t.contains("href")) {
-									drugs += ("|" + t.trim() + "%");
+									drugs += ("|" + t.trim() + "#");
 									continue;
 								}
 
@@ -249,7 +249,7 @@ public class GetDiseasesFromKEGG {
 									for (int i = 0; i < t.length();) {
 										t = t.substring(i);
 										if (t.contains("<a"))
-											drugs += (type + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
+											drugs += (type + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "#");
 										else
 											break;
 										i = t.indexOf("</a>") + 4;
@@ -277,7 +277,7 @@ public class GetDiseasesFromKEGG {
 								// System.out.println(t);
 								// gene
 								if (t.length() > 0 && !(" ").equals(t) && !t.contains("href")) {
-									marker += ("|" + t.trim() + "%");
+									marker += ("|" + t.trim() + "#");
 									continue;
 								}
 								// a links
@@ -288,7 +288,7 @@ public class GetDiseasesFromKEGG {
 									for (int i = 0; i < t.length();) {
 										t = t.substring(i);
 										if (t.contains("<a"))
-											marker += (type + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "%");
+											marker += (type + t.substring(t.indexOf(">") + 1, t.indexOf("</a>")) + "#");
 										else
 											break;
 										i = t.indexOf("</a>") + 4;
