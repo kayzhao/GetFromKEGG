@@ -45,8 +45,7 @@ public class GetDiseasesFromKEGG {
 			/**
 			 * 所有数据
 			 */
-			// kegg.getDisease("Kegg_Diseases_All_Data_" +
-			// System.currentTimeMillis() + ".txt");
+			kegg.getDisease("Kegg_Diseases_All_Data_" + System.currentTimeMillis() + ".txt");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -356,7 +355,8 @@ public class GetDiseasesFromKEGG {
 		FileOutputStream outputStream = new FileOutputStream(new File(writepath));
 		// int id = 1, max = 1437;
 		// int id = 1, max = 1710;
-		int id = 1, max = 1716;
+		// int id = 1, max = 1716;
+		int id = 1, max = 1775;
 
 		String head = "";
 		for (int i = 0; i < colname.length; i++) {

@@ -6,7 +6,7 @@ Get data from [KEGG](http://www.kegg.jp/) online database using jsoup jar
 ### GetDiseasesFromKEGG
 
 	Get the Diseases Data From KEGG.
-The latest KEGG-Disease Data is [20161209 version](https://raw.githubusercontent.com/kayzhao/GetFromKEGG/3cbfce0182d2eadf6ab161ea7ebeb12c37f6a505/disease/kegg/Kegg_Diseases_All_Data_20161209) 
+The latest KEGG-Disease Data is 20170314 version ( file path : disease/kegg/Kegg_Diseases_All_Data_20170314) 
 
 **Data Column**
 
